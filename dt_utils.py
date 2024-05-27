@@ -16,13 +16,9 @@ dttz
 """
 
 
-def dttz2ts(dttz):
-    return int(dttz.timestamp())
-
-
-def dt2ts(dt, offset=0):
-    dttz = datetime.fromisoformat(dt).replace(tzinfo=timezone(timedelta(hours=offset)))
-    return dttz2ts(dttz)
+def ts2dt(ts, offset=0):
+    dttz = ts2dttz(ts, offset=offset)
+    return str(dttz)[:19]
 
 
 def ts2dttz(ts, offset=0):
@@ -30,9 +26,17 @@ def ts2dttz(ts, offset=0):
     return utc_dt.replace(tzinfo=timezone(timedelta(hours=offset)))
 
 
-def ts2dt(ts, offset=0):
-    dttz = ts2dttz(ts, offset=offset)
-    return str(dttz)[:19]
+def dt2ts(dt, offset=0):
+    dttz = datetime.fromisoformat(dt).replace(tzinfo=timezone(timedelta(hours=offset)))
+    return dttz2ts(dttz)
+
+
+def dt2dttz(dt, offset):
+    return datetime.fromisoformat(dt).replace(tzinfo=timezone(timedelta(hours=offset)))
+
+
+def dttz2ts(dttz):
+    return int(dttz.timestamp())
 
 
 def dttz2dt(dttz, offset=None):
@@ -42,38 +46,28 @@ def dttz2dt(dttz, offset=None):
         return str(dttz.astimezone(timezone(timedelta(hours=offset))))[:19]
 
 
-def dt2dttz(dt, offset):
-    return datetime.fromisoformat(dt).replace(tzinfo=timezone(timedelta(hours=offset)))
+def get_day_of_week(dt):
+    # "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
+    return dt2dttz(dt, 0).strftime("%a")
 
 
 def now(offset=0):
     return datetime.now(timezone(timedelta(hours=+offset))).replace(microsecond=0)
 
 
-def get_day_of_week(dt):
-    # "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
-    return dt2dttz(dt, 0).strftime("%a")
+"""
+test
+"""
 
 
 @pytest.mark.parametrize(
-    "dttz,expected",
+    "ts,offset,expected",
     [
-        (datetime.fromisoformat("1970-01-01T09:00:00+09:00"), 0),
+        (0, 9, "1970-01-01 09:00:00"),
     ],
 )
-def test_dttz2ts(dttz, expected):
-    response = dttz2ts(dttz)
-    assert response == expected
-
-
-@pytest.mark.parametrize(
-    "dt,offset,expected",
-    [
-        ("1970-01-01 09:00:00", 9, 0),
-    ],
-)
-def test_dt2ts(dt, offset, expected):
-    response = dt2ts(dt, offset=offset)
+def test_ts2dt(ts, offset, expected):
+    response = ts2dt(ts, offset=offset)
     assert response == expected
 
 
@@ -89,13 +83,36 @@ def test_ts2dttz(ts, offset, expected):
 
 
 @pytest.mark.parametrize(
-    "ts,offset,expected",
+    "dt,offset,expected",
     [
-        (0, 9, "1970-01-01 09:00:00"),
+        ("1970-01-01 09:00:00", 9, 0),
     ],
 )
-def test_ts2dt(ts, offset, expected):
-    response = ts2dt(ts, offset=offset)
+def test_dt2ts(dt, offset, expected):
+    response = dt2ts(dt, offset=offset)
+    assert response == expected
+
+
+@pytest.mark.parametrize(
+    "dt,offset,expected",
+    [
+        ("1970-01-01 09:00:00", 9, datetime.fromisoformat("1970-01-01T09:00:00+09:00")),
+        ("1970-01-01 09:00:00", 0, datetime.fromisoformat("1970-01-01T09:00:00+00:00")),
+    ],
+)
+def test_dt2dttz(dt, offset, expected):
+    response = dt2dttz(dt, offset)
+    assert response == expected
+
+
+@pytest.mark.parametrize(
+    "dttz,expected",
+    [
+        (datetime.fromisoformat("1970-01-01T09:00:00+09:00"), 0),
+    ],
+)
+def test_dttz2ts(dttz, expected):
+    response = dttz2ts(dttz)
     assert response == expected
 
 
@@ -118,18 +135,6 @@ def test_ts2dt(ts, offset, expected):
 )
 def test_dttz2dt(dttz, offset, expected):
     response = dttz2dt(dttz, offset)
-    assert response == expected
-
-
-@pytest.mark.parametrize(
-    "dt,offset,expected",
-    [
-        ("1970-01-01 09:00:00", 9, datetime.fromisoformat("1970-01-01T09:00:00+09:00")),
-        ("1970-01-01 09:00:00", 0, datetime.fromisoformat("1970-01-01T09:00:00+00:00")),
-    ],
-)
-def test_dt2dttz(dt, offset, expected):
-    response = dt2dttz(dt, offset)
     assert response == expected
 
 
