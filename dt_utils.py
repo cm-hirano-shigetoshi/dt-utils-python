@@ -73,6 +73,10 @@ def date2dttz(date, offset):
     return dt2dttz(str(date) + " 00:00:00", offset)
 
 
+def add_days(date, n):
+    return date + timedelta(days=n)
+
+
 def get_day_of_week(dt):
     # "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
     return dt2dttz(dt, 0).strftime("%a")
@@ -252,6 +256,19 @@ def test_date2dt(date, expected):
 )
 def test_date2dttz(date, offset, expected):
     response = date2dttz(date, offset)
+    assert response == expected
+
+
+@pytest.mark.parametrize(
+    "date,n,expected",
+    [
+        (date.fromisoformat("2024-05-01"), 1, date.fromisoformat("2024-05-02")),
+        (date.fromisoformat("2024-05-01"), 0, date.fromisoformat("2024-05-01")),
+        (date.fromisoformat("2024-05-01"), -1, date.fromisoformat("2024-04-30")),
+    ],
+)
+def test_add_days(date, n, expected):
+    response = add_days(date, n)
     assert response == expected
 
 
