@@ -1,18 +1,21 @@
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 
 import pytest
 
 """
 ts
-    UNIX時刻
+    UNIX時刻の整数値
     1483196400
     秒単位の整数値
 dt
     日時の文字列
     "2024-04-02 00:00:00"
 dttz
+    datetime.datetime型
     タイムゾーンありの日時
-    datetime.datetime(1970, 1, 1, 9, 0, tzinfo=datetime.timezone(datetime.timedelta(seconds=32400)))
+date
+    datetime.date型
+    タイムゾーンという概念はない
 """
 
 
@@ -24,6 +27,10 @@ def ts2dt(ts, offset=0):
 def ts2dttz(ts, offset=0):
     utc_dt = datetime.fromtimestamp(ts)
     return utc_dt.replace(tzinfo=timezone(timedelta(hours=offset)))
+
+
+def ts2date(ts):
+    return date.fromisoformat(ts2dt(ts)[:10])
 
 
 def dt2ts(dt, offset=0):
@@ -79,6 +86,17 @@ def test_ts2dt(ts, offset, expected):
 )
 def test_ts2dttz(ts, offset, expected):
     response = ts2dttz(ts, offset=offset)
+    assert response == expected
+
+
+@pytest.mark.parametrize(
+    "ts,expected",
+    [
+        (0, date.fromisoformat("1970-01-01")),
+    ],
+)
+def test_ts2date(ts, expected):
+    response = ts2date(ts)
     assert response == expected
 
 
