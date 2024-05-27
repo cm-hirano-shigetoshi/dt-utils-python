@@ -57,6 +57,10 @@ def dttz2dt(dttz, offset=None):
         return str(dttz.astimezone(timezone(timedelta(hours=offset))))[:19]
 
 
+def dttz2date(dttz, offset=None):
+    return date.fromisoformat(dttz2dt(dttz, offset)[:10])
+
+
 def get_day_of_week(dt):
     # "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
     return dt2dttz(dt, 0).strftime("%a")
@@ -168,6 +172,31 @@ def test_dttz2ts(dttz, expected):
 )
 def test_dttz2dt(dttz, offset, expected):
     response = dttz2dt(dttz, offset)
+    assert response == expected
+
+
+@pytest.mark.parametrize(
+    "dttz,offset,expected",
+    [
+        (
+            datetime.fromisoformat("1970-01-01T00:00:00+00:00"),
+            None,
+            date.fromisoformat("1970-01-01"),
+        ),
+        (
+            datetime.fromisoformat("1970-01-01T00:00:00+00:00"),
+            0,
+            date.fromisoformat("1970-01-01"),
+        ),
+        (
+            datetime.fromisoformat("1970-01-01T15:00:00+00:00"),
+            9,
+            date.fromisoformat("1970-01-02"),
+        ),
+    ],
+)
+def test_dttz2date(dttz, offset, expected):
+    response = dttz2date(dttz, offset)
     assert response == expected
 
 
