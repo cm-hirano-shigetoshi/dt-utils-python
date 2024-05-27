@@ -77,9 +77,9 @@ def add_days(date, n):
     return date + timedelta(days=n)
 
 
-def get_day_of_week(dt):
+def get_day_of_week(date):
     # "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
-    return dt2dttz(dt, 0).strftime("%a")
+    return date.strftime("%a")
 
 
 def now(offset=0):
@@ -273,11 +273,11 @@ def test_add_days(date, n, expected):
 
 
 @pytest.mark.parametrize(
-    "dt,expected",
-    [("2024-05-14", "Tue")],
+    "date,expected",
+    [(date.fromisoformat("2024-05-14"), "Tue")],
 )
-def test_get_day_of_week(dt, expected):
-    response = get_day_of_week(dt)
+def test_get_day_of_week(date, expected):
+    response = get_day_of_week(date)
     assert response == expected
 
 
