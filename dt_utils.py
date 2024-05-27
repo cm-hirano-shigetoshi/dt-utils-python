@@ -86,6 +86,10 @@ def now(offset=0):
     return datetime.now(timezone(timedelta(hours=+offset))).replace(microsecond=0)
 
 
+def now_jst():
+    return now(offset=9)
+
+
 """
 test
 """
