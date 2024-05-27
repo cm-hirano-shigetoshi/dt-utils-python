@@ -30,7 +30,7 @@ def ts2dttz(ts, offset=0):
 
 
 def ts2date(ts):
-    return date.fromisoformat(ts2dt(ts)[:10])
+    return dt2date(ts2dt(ts))
 
 
 def dt2ts(dt, offset=0):
@@ -40,6 +40,10 @@ def dt2ts(dt, offset=0):
 
 def dt2dttz(dt, offset):
     return datetime.fromisoformat(dt).replace(tzinfo=timezone(timedelta(hours=offset)))
+
+
+def dt2date(dt):
+    return date.fromisoformat(dt[:10])
 
 
 def dttz2ts(dttz):
@@ -120,6 +124,17 @@ def test_dt2ts(dt, offset, expected):
 )
 def test_dt2dttz(dt, offset, expected):
     response = dt2dttz(dt, offset)
+    assert response == expected
+
+
+@pytest.mark.parametrize(
+    "dt,expected",
+    [
+        ("1970-01-01 00:00:00", date.fromisoformat("1970-01-01")),
+    ],
+)
+def test_dt2date(dt, expected):
+    response = dt2date(dt)
     assert response == expected
 
 
