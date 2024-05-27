@@ -61,6 +61,18 @@ def dttz2date(dttz, offset=None):
     return date.fromisoformat(dttz2dt(dttz, offset)[:10])
 
 
+def date2ts(date, offset):
+    return dt2ts(str(date) + " 00:00:00", offset)
+
+
+def date2dt(date):
+    return str(date) + " 00:00:00"
+
+
+def date2dttz(date, offset):
+    return dt2dttz(str(date) + " 00:00:00", offset)
+
+
 def get_day_of_week(dt):
     # "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
     return dt2dttz(dt, 0).strftime("%a")
@@ -197,6 +209,49 @@ def test_dttz2dt(dttz, offset, expected):
 )
 def test_dttz2date(dttz, offset, expected):
     response = dttz2date(dttz, offset)
+    assert response == expected
+
+
+@pytest.mark.parametrize(
+    "date,offset,expected",
+    [
+        (date.fromisoformat("1970-01-02"), 0, 86400),
+        (date.fromisoformat("1970-01-02"), 9, 54000),
+    ],
+)
+def test_date2ts(date, offset, expected):
+    response = date2ts(date, offset)
+    assert response == expected
+
+
+@pytest.mark.parametrize(
+    "date,expected",
+    [
+        (date.fromisoformat("1970-01-01"), "1970-01-01 00:00:00"),
+    ],
+)
+def test_date2dt(date, expected):
+    response = date2dt(date)
+    assert response == expected
+
+
+@pytest.mark.parametrize(
+    "date,offset,expected",
+    [
+        (
+            date.fromisoformat("1970-01-01"),
+            0,
+            datetime.fromisoformat("1970-01-01 00:00:00+00:00"),
+        ),
+        (
+            date.fromisoformat("1970-01-01"),
+            9,
+            datetime.fromisoformat("1970-01-01 00:00:00+09:00"),
+        ),
+    ],
+)
+def test_date2dttz(date, offset, expected):
+    response = date2dttz(date, offset)
     assert response == expected
 
 
