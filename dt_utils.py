@@ -16,7 +16,7 @@ dttz
 date
     datetime.date型
     タイムゾーンという概念はない
-et
+elapsed_time
     経過時刻の文字列
     "65:43:21"
 """
@@ -87,7 +87,7 @@ def calc_elapsed_time(start_dttz, end_dttz):
     elapsed_hours, minute = divmod(elapsed_minutes, 60)
     second = str(second).zfill(2)
     minute = str(minute).zfill(2)
-    hour = str(elapsed_days * 24 + elapsed_hours).zfill(2)
+    hour = str(elapsed_days * 24 + elapsed_hours)
     return f"{hour}:{minute}:{second}"
 
 
@@ -295,8 +295,8 @@ def test_add_days(date, n, expected):
     [
         (
             datetime.fromisoformat("1970-01-01T00:00:00+00:00"),
-            datetime.fromisoformat("1970-01-01T12:34:56+00:00"),
-            "12:34:56",
+            datetime.fromisoformat("1970-01-01T02:34:56+00:00"),
+            "2:34:56",
         ),
         (
             datetime.fromisoformat("1970-01-01T00:00:00+00:00"),
