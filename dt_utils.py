@@ -41,7 +41,7 @@ def dt2ts(dt, offset=0):
     return dttz2ts(dttz)
 
 
-def dt2dttz(dt, offset):
+def dt2dttz(dt, offset=0):
     return datetime.fromisoformat(dt).replace(tzinfo=timezone(timedelta(hours=offset)))
 
 
