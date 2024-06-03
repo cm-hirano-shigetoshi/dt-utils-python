@@ -16,6 +16,9 @@ dttz
 date
     datetime.date型
     タイムゾーンという概念はない
+et
+    経過時刻の文字列
+    "65:43:21"
 """
 
 
@@ -75,6 +78,17 @@ def date2dttz(date, offset):
 
 def add_days(date, n):
     return date + timedelta(days=n)
+
+
+def calc_elapsed_time(start_dttz, end_dttz):
+    elapsed_days = (end_dttz - start_dttz).days
+    elapsed_seconds = (end_dttz - start_dttz).seconds
+    elapsed_minutes, second = divmod(elapsed_seconds, 60)
+    elapsed_hours, minute = divmod(elapsed_minutes, 60)
+    second = str(second).zfill(2)
+    minute = str(minute).zfill(2)
+    hour = str(elapsed_days * 24 + elapsed_hours).zfill(2)
+    return f"{hour}:{minute}:{second}"
 
 
 def get_day_of_week(date):
@@ -273,6 +287,31 @@ def test_date2dttz(date, offset, expected):
 )
 def test_add_days(date, n, expected):
     response = add_days(date, n)
+    assert response == expected
+
+
+@pytest.mark.parametrize(
+    "start_dttz,end_dttz,expected",
+    [
+        (
+            datetime.fromisoformat("1970-01-01T00:00:00+00:00"),
+            datetime.fromisoformat("1970-01-01T12:34:56+00:00"),
+            "12:34:56",
+        ),
+        (
+            datetime.fromisoformat("1970-01-01T00:00:00+00:00"),
+            datetime.fromisoformat("1970-01-02T12:34:56+00:00"),
+            "36:34:56",
+        ),
+        (
+            datetime.fromisoformat("1970-01-01T00:00:00+00:00"),
+            datetime.fromisoformat("1970-01-02T12:34:56+09:00"),
+            "27:34:56",
+        ),
+    ],
+)
+def test_calc_elapsed_time(start_dttz, end_dttz, expected):
+    response = calc_elapsed_time(start_dttz, end_dttz)
     assert response == expected
 
 
