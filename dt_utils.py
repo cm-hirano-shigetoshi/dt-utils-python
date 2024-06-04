@@ -80,6 +80,10 @@ def add_days(date, n):
     return date + timedelta(days=n)
 
 
+def add_seconds(dttz, n):
+    return dttz + timedelta(seconds=n)
+
+
 def calc_elapsed_time(start_dttz, end_dttz):
     elapsed_days = (end_dttz - start_dttz).days
     elapsed_seconds = (end_dttz - start_dttz).seconds
@@ -287,6 +291,26 @@ def test_date2dttz(date, offset, expected):
 )
 def test_add_days(date, n, expected):
     response = add_days(date, n)
+    assert response == expected
+
+
+@pytest.mark.parametrize(
+    "dttz,n,expected",
+    [
+        (
+            datetime.fromisoformat("2024-05-01 00:00:00"),
+            1,
+            datetime.fromisoformat("2024-05-01 00:00:01"),
+        ),
+        (
+            datetime.fromisoformat("2024-05-01 00:00:00"),
+            3601,
+            datetime.fromisoformat("2024-05-01 01:00:01"),
+        ),
+    ],
+)
+def test_add_seconds(dttz, n, expected):
+    response = add_seconds(dttz, n)
     assert response == expected
 
 
