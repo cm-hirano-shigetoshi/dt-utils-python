@@ -16,7 +16,10 @@ dttz
 date
     datetime.date型
     タイムゾーンという概念はない
-elapsed_time
+time
+    時刻部分の文字列
+    "12:34:56"
+dur
     経過時刻の文字列
     "65:43:21"
 """
@@ -47,6 +50,10 @@ def dt2dttz(dt, offset=0):
 
 def dt2date(dt):
     return date.fromisoformat(dt[:10])
+
+
+def dt2time(dt):
+    return dt[11:]
 
 
 def dttz2ts(dttz):
@@ -177,6 +184,15 @@ def test_dt2dttz(dt, offset, expected):
 )
 def test_dt2date(dt, expected):
     response = dt2date(dt)
+    assert response == expected
+
+
+@pytest.mark.parametrize(
+    "dt,expected",
+    [("1970-01-01 00:00:00", "00:00:00")],
+)
+def test_dt2time(dt, expected):
+    response = dt2time(dt)
     assert response == expected
 
 
