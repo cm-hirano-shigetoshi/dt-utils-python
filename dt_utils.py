@@ -91,6 +91,23 @@ def add_seconds(dttz, n):
     return dttz + timedelta(seconds=n)
 
 
+def add_seconds_to_dur(dur, n):
+    def split_dur(dur):
+        return (int(dur[:-6]), int(dur[-5:-3]), int(dur[-2:]))
+
+    def split_n(n):
+        minute, second = divmod(n, 60)
+        hour, minute = divmod(minute, 60)
+        return (hour, minute, second)
+
+    durs = split_dur(dur)
+    ns = split_n(n)
+    carry, second = divmod(durs[2] + ns[2], 60)
+    carry, minute = divmod(durs[1] + ns[1] + carry, 60)
+    hour = durs[0] + ns[0] + carry
+    return f"{hour}:{str(minute).zfill(2)}:{str(second).zfill(2)}"
+
+
 def calc_elapsed_time(start_dttz, end_dttz):
     elapsed_days = (end_dttz - start_dttz).days
     elapsed_seconds = (end_dttz - start_dttz).seconds
@@ -327,6 +344,26 @@ def test_add_days(date, n, expected):
 )
 def test_add_seconds(dttz, n, expected):
     response = add_seconds(dttz, n)
+    assert response == expected
+
+
+@pytest.mark.parametrize(
+    "dur,n,expected",
+    [
+        (
+            "9:00:00",
+            3601,
+            "10:00:01",
+        ),
+        (
+            "10:00:00",
+            -3600,
+            "9:00:00",
+        ),
+    ],
+)
+def test_add_seconds_to_dur(dur, n, expected):
+    response = add_seconds_to_dur(dur, n)
     assert response == expected
 
 
