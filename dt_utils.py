@@ -108,7 +108,7 @@ def add_seconds_to_dur(dur, n):
     return f"{hour}:{str(minute).zfill(2)}:{str(second).zfill(2)}"
 
 
-def calc_elapsed_time(start_dttz, end_dttz):
+def calc_dur(start_dttz, end_dttz):
     elapsed_days = (end_dttz - start_dttz).days
     elapsed_seconds = (end_dttz - start_dttz).seconds
     elapsed_minutes, second = divmod(elapsed_seconds, 60)
@@ -117,6 +117,18 @@ def calc_elapsed_time(start_dttz, end_dttz):
     minute = str(minute).zfill(2)
     hour = str(elapsed_days * 24 + elapsed_hours)
     return f"{hour}:{minute}:{second}"
+
+
+def sum_dur(dur1, dur2):
+    def split_dur(dur):
+        return (int(dur[:-6]), int(dur[-5:-3]), int(dur[-2:]))
+
+    durs1 = split_dur(dur1)
+    durs2 = split_dur(dur2)
+    carry, second = divmod(durs1[2] + durs2[2], 60)
+    carry, minute = divmod(durs1[1] + durs2[1] + carry, 60)
+    hour = durs1[0] + durs2[0] + carry
+    return f"{hour}:{str(minute).zfill(2)}:{str(second).zfill(2)}"
 
 
 def get_day_of_week(date):
@@ -387,8 +399,19 @@ def test_add_seconds_to_dur(dur, n, expected):
         ),
     ],
 )
-def test_calc_elapsed_time(start_dttz, end_dttz, expected):
-    response = calc_elapsed_time(start_dttz, end_dttz)
+def test_calc_dur(start_dttz, end_dttz, expected):
+    response = calc_dur(start_dttz, end_dttz)
+    assert response == expected
+
+
+@pytest.mark.parametrize(
+    "dur1,dur2,expected",
+    [
+        ("5:55:55", "4:44:44", "10:40:39"),
+    ],
+)
+def test_sum_dur(dur1, dur2, expected):
+    response = sum_dur(dur1, dur2)
     assert response == expected
 
 
