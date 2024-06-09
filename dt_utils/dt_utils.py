@@ -1,6 +1,6 @@
 import datetime
-from datetime import date as datecls
-from datetime import datetime as dtcls
+from datetime import date as datemod
+from datetime import datetime as dtmod
 from datetime import timedelta, timezone
 
 import pytest
@@ -34,7 +34,7 @@ def ts2dt(ts, offset=0):
 
 
 def ts2dttz(ts, offset=0):
-    utc_dt = dtcls.fromtimestamp(ts)
+    utc_dt = dtmod.fromtimestamp(ts)
     return utc_dt.replace(tzinfo=timezone(timedelta(hours=offset)))
 
 
@@ -43,12 +43,12 @@ def ts2date(ts):
 
 
 def dt2ts(dt, offset=0):
-    dttz = dtcls.fromisoformat(dt).replace(tzinfo=timezone(timedelta(hours=offset)))
+    dttz = dtmod.fromisoformat(dt).replace(tzinfo=timezone(timedelta(hours=offset)))
     return dttz2ts(dttz)
 
 
 def dt2dttz(dt, offset=0):
-    return dtcls.fromisoformat(dt).replace(tzinfo=timezone(timedelta(hours=offset)))
+    return dtmod.fromisoformat(dt).replace(tzinfo=timezone(timedelta(hours=offset)))
 
 
 def dt2date(dt):
@@ -87,7 +87,7 @@ def date2dttz(date, offset):
 
 
 def add_days(date, n):
-    return str(datecls.fromisoformat(date) + timedelta(days=n))
+    return str(datemod.fromisoformat(date) + timedelta(days=n))
 
 
 def add_seconds(dttz, n):
@@ -136,7 +136,7 @@ def sum_dur(dur1, dur2):
 
 def get_day_of_week(date):
     # "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
-    return datecls.fromisoformat(date).strftime("%a")
+    return datemod.fromisoformat(date).strftime("%a")
 
 
 def now(offset=0):
@@ -168,7 +168,7 @@ def test_ts2dt(ts, offset, expected):
 @pytest.mark.parametrize(
     "ts,offset,expected",
     [
-        (0, 9, dtcls.fromisoformat("1970-01-01T09:00:00+09:00")),
+        (0, 9, dtmod.fromisoformat("1970-01-01T09:00:00+09:00")),
     ],
 )
 def test_ts2dttz(ts, offset, expected):
@@ -201,8 +201,8 @@ def test_dt2ts(dt, offset, expected):
 @pytest.mark.parametrize(
     "dt,offset,expected",
     [
-        ("1970-01-01 09:00:00", 9, dtcls.fromisoformat("1970-01-01T09:00:00+09:00")),
-        ("1970-01-01 09:00:00", 0, dtcls.fromisoformat("1970-01-01T09:00:00+00:00")),
+        ("1970-01-01 09:00:00", 9, dtmod.fromisoformat("1970-01-01T09:00:00+09:00")),
+        ("1970-01-01 09:00:00", 0, dtmod.fromisoformat("1970-01-01T09:00:00+00:00")),
     ],
 )
 def test_dt2dttz(dt, offset, expected):
@@ -233,7 +233,7 @@ def test_dt2time(dt, expected):
 @pytest.mark.parametrize(
     "dttz,expected",
     [
-        (dtcls.fromisoformat("1970-01-01T09:00:00+09:00"), 0),
+        (dtmod.fromisoformat("1970-01-01T09:00:00+09:00"), 0),
     ],
 )
 def test_dttz2ts(dttz, expected):
@@ -244,15 +244,15 @@ def test_dttz2ts(dttz, expected):
 @pytest.mark.parametrize(
     "dttz,offset,expected",
     [
-        (dtcls.fromisoformat("1970-01-01T09:00:00+09:00"), 9, "1970-01-01 09:00:00"),
-        (dtcls.fromisoformat("1970-01-01T09:00:00+09:00"), 0, "1970-01-01 00:00:00"),
+        (dtmod.fromisoformat("1970-01-01T09:00:00+09:00"), 9, "1970-01-01 09:00:00"),
+        (dtmod.fromisoformat("1970-01-01T09:00:00+09:00"), 0, "1970-01-01 00:00:00"),
         (
-            dtcls.fromisoformat("1970-01-01T09:00:00+09:00"),
+            dtmod.fromisoformat("1970-01-01T09:00:00+09:00"),
             None,
             "1970-01-01 09:00:00",
         ),
         (
-            dtcls.fromisoformat("1970-01-01T09:00:00+00:00"),
+            dtmod.fromisoformat("1970-01-01T09:00:00+00:00"),
             None,
             "1970-01-01 09:00:00",
         ),
@@ -267,17 +267,17 @@ def test_dttz2dt(dttz, offset, expected):
     "dttz,offset,expected",
     [
         (
-            dtcls.fromisoformat("1970-01-01T00:00:00+00:00"),
+            dtmod.fromisoformat("1970-01-01T00:00:00+00:00"),
             None,
             "1970-01-01",
         ),
         (
-            dtcls.fromisoformat("1970-01-01T00:00:00+00:00"),
+            dtmod.fromisoformat("1970-01-01T00:00:00+00:00"),
             0,
             "1970-01-01",
         ),
         (
-            dtcls.fromisoformat("1970-01-01T15:00:00+00:00"),
+            dtmod.fromisoformat("1970-01-01T15:00:00+00:00"),
             9,
             "1970-01-02",
         ),
@@ -317,12 +317,12 @@ def test_date2dt(date, expected):
         (
             "1970-01-01",
             0,
-            dtcls.fromisoformat("1970-01-01 00:00:00+00:00"),
+            dtmod.fromisoformat("1970-01-01 00:00:00+00:00"),
         ),
         (
             "1970-01-01",
             9,
-            dtcls.fromisoformat("1970-01-01 00:00:00+09:00"),
+            dtmod.fromisoformat("1970-01-01 00:00:00+09:00"),
         ),
     ],
 )
@@ -348,14 +348,14 @@ def test_add_days(date, n, expected):
     "dttz,n,expected",
     [
         (
-            dtcls.fromisoformat("2024-05-01 00:00:00"),
+            dtmod.fromisoformat("2024-05-01 00:00:00"),
             1,
-            dtcls.fromisoformat("2024-05-01 00:00:01"),
+            dtmod.fromisoformat("2024-05-01 00:00:01"),
         ),
         (
-            dtcls.fromisoformat("2024-05-01 00:00:00"),
+            dtmod.fromisoformat("2024-05-01 00:00:00"),
             3601,
-            dtcls.fromisoformat("2024-05-01 01:00:01"),
+            dtmod.fromisoformat("2024-05-01 01:00:01"),
         ),
     ],
 )
@@ -388,18 +388,18 @@ def test_add_seconds_to_dur(dur, n, expected):
     "start_dttz,end_dttz,expected",
     [
         (
-            dtcls.fromisoformat("1970-01-01T00:00:00+00:00"),
-            dtcls.fromisoformat("1970-01-01T02:34:56+00:00"),
+            dtmod.fromisoformat("1970-01-01T00:00:00+00:00"),
+            dtmod.fromisoformat("1970-01-01T02:34:56+00:00"),
             "2:34:56",
         ),
         (
-            dtcls.fromisoformat("1970-01-01T00:00:00+00:00"),
-            dtcls.fromisoformat("1970-01-02T12:34:56+00:00"),
+            dtmod.fromisoformat("1970-01-01T00:00:00+00:00"),
+            dtmod.fromisoformat("1970-01-02T12:34:56+00:00"),
             "36:34:56",
         ),
         (
-            dtcls.fromisoformat("1970-01-01T00:00:00+00:00"),
-            dtcls.fromisoformat("1970-01-02T12:34:56+09:00"),
+            dtmod.fromisoformat("1970-01-01T00:00:00+00:00"),
+            dtmod.fromisoformat("1970-01-02T12:34:56+09:00"),
             "27:34:56",
         ),
     ],
@@ -433,8 +433,8 @@ def test_get_day_of_week(date, expected):
 @pytest.mark.parametrize(
     "offset,expected",
     [
-        (0, dtcls.fromisoformat("2024-05-12 16:48:20+00:00")),
-        (9, dtcls.fromisoformat("2024-05-13 01:48:20+09:00")),
+        (0, dtmod.fromisoformat("2024-05-12 16:48:20+00:00")),
+        (9, dtmod.fromisoformat("2024-05-13 01:48:20+09:00")),
     ],
 )
 def test_now(offset, expected):
