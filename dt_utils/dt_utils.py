@@ -139,6 +139,21 @@ def get_day_of_week(date):
     return datemod.fromisoformat(date).strftime("%a")
 
 
+def get_date_iter(start_date, end_date):
+    def get_generator(start_date, end_date):
+        d = start_date
+        while d != end_date:
+            yield d
+            d = add_days(d, 1)
+        yield d
+
+    return get_generator(start_date, end_date)
+
+
+def get_date_list(start_date, end_date):
+    return list(get_date_iter(start_date, end_date))
+
+
 def now(offset=0):
     return datetime.datetime.now(timezone(timedelta(hours=+offset))).replace(
         microsecond=0
@@ -426,6 +441,21 @@ def test_sum_dur(dur1, dur2, expected):
 )
 def test_get_day_of_week(date, expected):
     response = get_day_of_week(date)
+    assert response == expected
+
+
+@pytest.mark.parametrize(
+    "start_date,end_date,expected",
+    [
+        (
+            "2024-06-29",
+            "2024-07-02",
+            ["2024-06-29", "2024-06-30", "2024-07-01", "2024-07-02"],
+        )
+    ],
+)
+def test_get_date_list(start_date, end_date, expected):
+    response = get_date_list(start_date, end_date)
     assert response == expected
 
 
